@@ -1,318 +1,282 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Autonomous HD Cyber Snake</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandmaster AI Chess - Showcase Edition</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chessboard.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --board-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
 
-    body {
-      background-color: #0d1117;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-    .container {
-      position: relative;
-      padding: 4px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #00f2fe, #4facfe, #00c6ff);
-      box-shadow: 0 0 35px rgba(0, 242, 254, 0.3);
-    }
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-    .canvas-wrapper {
-      position: relative;
-      background: #0d1117;
-      border-radius: 12px;
-      overflow: hidden;
-    }
+        .header-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-    canvas {
-      display: block;
-      background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
-    }
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
 
-    .overlay {
-      position: absolute;
-      top: 16px;
-      left: 20px;
-      color: #f0f6fc;
-      font-size: 13px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 600;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      z-index: 10;
-    }
+        .header-title h1 span {
+            color: var(--accent);
+        }
 
-    .badge {
-      background: rgba(255, 0, 127, 0.2);
-      border: 1px solid rgba(ff, 0, 127, 0.5);
-      color: #ff007f;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-    }
-  </style>
+        .status-text {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* HD Board Container */
+        .board-wrapper {
+            position: relative;
+            width: 480px;
+            max-width: 90vw;
+            box-shadow: var(--board-shadow);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 4px solid #334155;
+        }
+
+        #board {
+            width: 100%;
+        }
+
+        /* Warna Papan HD Realistis */
+        .white-1e1d3 {
+            background-color: #e2d6b5 !important;
+            color: #b58863;
+        }
+
+        .black-3c85d {
+            background-color: #b88b4a !important;
+            color: #f0d9b5;
+        }
+
+        /* Highlight untuk bidak yang disentuh/diklik */
+        .highlight-selected {
+            background-color: rgba(99, 102, 241, 0.6) !important;
+        }
+
+        /* Action Buttons minimalis */
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            width: 480px;
+            max-width: 90vw;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-restart {
+            background: var(--accent);
+        }
+
+        .btn-restart:hover {
+            background: var(--accent-hover);
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="canvas-wrapper">
-      <div class="overlay">
-        <span>AI Autonomous Snake</span>
-        <span class="badge">HARD BOUNDARY</span>
-      </div>
-      <canvas id="snakeCanvas" width="800" height="400"></canvas>
+    <div class="header-title">
+        <h1>Grandmaster <span>AI Chess</span></h1>
+        <div id="status" class="status-text">Sentuh bidak Anda untuk melangkah</div>
     </div>
-  </div>
 
-  <script>
-    const canvas = document.getElementById("snakeCanvas");
-    const ctx = canvas.getContext("2d");
+    <!-- Papan Catur -->
+    <div class="board-wrapper">
+        <div id="board"></div>
+    </div>
 
-    const GRID_SIZE = 20;
-    const COLS = canvas.width / GRID_SIZE;
-    const ROWS = canvas.height / GRID_SIZE;
+    <!-- Tombol Kontrol Minimalis -->
+    <div class="actions">
+        <button id="btn-restart" class="btn btn-restart">⚡ Game Baru</button>
+        <button id="btn-undo" class="btn">↩️ Batal Langkah</button>
+    </div>
 
-    // Batas wilayah gerak Aman (Aman dari Dinding Luar)
-    const MIN_X = 1;
-    const MAX_X = COLS - 2;
-    const MIN_Y = 1;
-    const MAX_Y = ROWS - 2;
+    <!-- External CDNs -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
-    let snake = [
-      { x: 10, y: 10 },
-      { x: 9, y: 10 },
-      { x: 8, y: 10 }
-    ];
+    <script>
+        const game = new Chess();
+        let board = null;
+        let stockfish = null;
+        let selectedSquare = null;
 
-    let dir = { x: 1, y: 0 };
-    let food = generateFood();
-    let particles = [];
+        const STOCKFISH_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
 
-    // Algoritma Penjelajah Aman
-    function getNextDirection() {
-      const head = snake[0];
-      const possibleMoves = [
-        { x: 1, y: 0 },
-        { x: -1, y: 0 },
-        { x: 0, y: 1 },
-        { x: 0, y: -1 }
-      ];
+        function initStockfish() {
+            fetch(STOCKFISH_WORKER_URL)
+                .then(res => res.blob())
+                .then(blob => {
+                    const workerUrl = URL.createObjectURL(blob);
+                    stockfish = new Worker(workerUrl);
 
-      // Filter: HANYA BOLEH GERAK DI DALAM AREA SAFE ZONE (MIN_X s/d MAX_X, MIN_Y s/d MAX_Y)
-      const validMoves = possibleMoves.filter(move => {
-        const nextX = head.x + move.x;
-        const nextY = head.y + move.y;
+                    stockfish.onmessage = function(event) {
+                        const message = event.data;
+                        if (message.startsWith('bestmove')) {
+                            const bestMove = message.split(' ')[1];
+                            if (bestMove) {
+                                game.move({
+                                    from: bestMove.substring(0, 2),
+                                    to: bestMove.substring(2, 4),
+                                    promotion: 'q'
+                                });
+                                board.position(game.fen());
+                                updateStatus();
+                            }
+                        }
+                    };
 
-        const isInsideWall = nextX >= MIN_X && nextX <= MAX_X && nextY >= MIN_Y && nextY <= MAX_Y;
-        const isSelfCollision = snake.some(segment => segment.x === nextX && segment.y === nextY);
-
-        return isInsideWall && !isSelfCollision;
-      });
-
-      // Jika terjebak tanpa opsi aman, terpaksa reset game
-      if (validMoves.length === 0) return null;
-
-      // Pilih jalur terdekat menuju makanan
-      validMoves.sort((a, b) => {
-        const distA = Math.abs((head.x + a.x) - food.x) + Math.abs((head.y + a.y) - food.y);
-        const distB = Math.abs((head.x + b.x) - food.x) + Math.abs((head.y + b.y) - food.y);
-        return distA - distB;
-      });
-
-      return validMoves[0];
-    }
-
-    function generateFood() {
-      let newFood;
-      while (!newFood || snake.some(segment => segment.x === newFood.x && segment.y === newFood.y)) {
-        newFood = {
-          x: Math.floor(Math.random() * (MAX_X - MIN_X + 1)) + MIN_X,
-          y: Math.floor(Math.random() * (MAX_Y - MIN_Y + 1)) + MIN_Y
-        };
-      }
-      return newFood;
-    }
-
-    function createParticles(x, y) {
-      for (let i = 0; i < 12; i++) {
-        particles.push({
-          x: x * GRID_SIZE + GRID_SIZE / 2,
-          y: y * GRID_SIZE + GRID_SIZE / 2,
-          vx: (Math.random() - 0.5) * 4,
-          vy: (Math.random() - 0.5) * 4,
-          alpha: 1,
-          size: Math.random() * 3 + 1
-        });
-      }
-    }
-
-    function resetGame() {
-      snake = [
-        { x: 10, y: 10 },
-        { x: 9, y: 10 },
-        { x: 8, y: 10 }
-      ];
-      dir = { x: 1, y: 0 };
-      food = generateFood();
-    }
-
-    function update() {
-      const nextDir = getNextDirection();
-
-      // Reset jika AI terpojok / menabrak
-      if (!nextDir) {
-        resetGame();
-        return;
-      }
-
-      dir = nextDir;
-      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
-      snake.unshift(head);
-
-      // Cek Makan Makanan
-      if (head.x === food.x && head.y === food.y) {
-        createParticles(food.x, food.y);
-        food = generateFood();
-      } else {
-        snake.pop();
-      }
-
-      // Update Efek Partikel
-      particles.forEach((p, index) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= 0.03;
-        if (p.alpha <= 0) particles.splice(index, 1);
-      });
-    }
-
-    function drawWalls() {
-      // Draw Dinding Penghalang Padat (Solid Wall Blocks)
-      ctx.fillStyle = "rgba(255, 0, 127, 0.15)";
-      ctx.strokeStyle = "#ff007f";
-      ctx.lineWidth = 2;
-
-      // Gambar Blok Dinding Luar
-      for (let x = 0; x < COLS; x++) {
-        for (let y = 0; y < ROWS; y++) {
-          if (x < MIN_X || x > MAX_X || y < MIN_Y || y > MAX_Y) {
-            ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-          }
+                    stockfish.postMessage('uci');
+                    stockfish.postMessage('ucinewgame');
+                    // Tingkat kesulitan AI tetap Maksimal
+                    stockfish.postMessage('setoption name Skill Level value 20');
+                });
         }
-      }
 
-      // Garis Neon Pembatas Dalam
-      ctx.save();
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = "#ff007f";
-      ctx.strokeRect(
-        MIN_X * GRID_SIZE,
-        MIN_Y * GRID_SIZE,
-        (MAX_X - MIN_X + 1) * GRID_SIZE,
-        (MAX_Y - MIN_Y + 1) * GRID_SIZE
-      );
-      ctx.restore();
-    }
+        function makeAIMove() {
+            if (game.game_over()) return;
 
-    function drawGrid() {
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
-      ctx.lineWidth = 1;
-      for (let x = MIN_X * GRID_SIZE; x <= (MAX_X + 1) * GRID_SIZE; x += GRID_SIZE) {
-        ctx.beginPath();
-        ctx.moveTo(x, MIN_Y * GRID_SIZE);
-        ctx.lineTo(x, (MAX_Y + 1) * GRID_SIZE);
-        ctx.stroke();
-      }
-      for (let y = MIN_Y * GRID_SIZE; y <= (MAX_Y + 1) * GRID_SIZE; y += GRID_SIZE) {
-        ctx.beginPath();
-        ctx.moveTo(MIN_X * GRID_SIZE, y);
-        ctx.lineTo((MAX_X + 1) * GRID_SIZE, y);
-        ctx.stroke();
-      }
-    }
+            document.getElementById('status').innerText = '🤖 AI sedang melangkah...';
+            
+            stockfish.postMessage(`position fen ${game.fen()}`);
+            // Dibatasi maksimal 300 ms (0.3 detik) agar respons secepat kilat
+            stockfish.postMessage('go movetime 300');
+        }
 
-    function draw() {
-      ctx.fillStyle = "#0d1117";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function removeHighlights() {
+            $('#board .square-55d63').removeClass('highlight-selected');
+        }
 
-      drawGrid();
-      drawWalls();
+        // Fitur Sentuh Bidak -> Sentuh Petak Tujuan
+        function handleSquareClick(square) {
+            if (game.game_over() || game.turn() === 'b') return;
 
-      // Draw Partikel
-      particles.forEach(p => {
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = "#00f2fe";
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = "#00f2fe";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      });
+            if (selectedSquare === null) {
+                const piece = game.get(square);
+                if (piece && piece.color === 'w') {
+                    selectedSquare = square;
+                    $('#board .square-' + square).addClass('highlight-selected');
+                }
+            } else {
+                const move = game.move({
+                    from: selectedSquare,
+                    to: square,
+                    promotion: 'q'
+                });
 
-      // Draw Makanan (Pink Glowing Orb)
-      ctx.save();
-      ctx.fillStyle = "#ff007f";
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = "#ff007f";
-      ctx.beginPath();
-      ctx.arc(
-        food.x * GRID_SIZE + GRID_SIZE / 2,
-        food.y * GRID_SIZE + GRID_SIZE / 2,
-        GRID_SIZE / 2.8,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-      ctx.restore();
+                removeHighlights();
+                const previousSquare = selectedSquare;
+                selectedSquare = null;
 
-      // Draw Ular (Gradient Blue-Cyan)
-      snake.forEach((segment, index) => {
-        ctx.save();
-        
-        const progress = index / snake.length;
-        const color = index === 0 ? "#00f2fe" : `hsl(${190 + progress * 50}, 100%, 50%)`;
-        
-        ctx.fillStyle = color;
-        ctx.shadowBlur = index === 0 ? 12 : 4;
-        ctx.shadowColor = "#00f2fe";
+                if (move === null) {
+                    const piece = game.get(square);
+                    if (piece && piece.color === 'w' && square !== previousSquare) {
+                        selectedSquare = square;
+                        $('#board .square-' + square).addClass('highlight-selected');
+                    }
+                    return;
+                }
 
-        const x = segment.x * GRID_SIZE + 1;
-        const y = segment.y * GRID_SIZE + 1;
-        const size = GRID_SIZE - 2;
-        const radius = index === 0 ? 6 : 4;
+                board.position(game.fen());
+                updateStatus();
+                // Eksekusi AI langsung tanpa penundaan
+                window.setTimeout(makeAIMove, 50);
+            }
+        }
 
-        ctx.beginPath();
-        ctx.roundRect(x, y, size, size, radius);
-        ctx.fill();
+        function updateStatus() {
+            if (game.in_checkmate()) {
+                document.getElementById('status').innerText = 'Skakmat! Permainan Selesai.';
+            } else if (game.in_draw()) {
+                document.getElementById('status').innerText = 'Remis / Seri!';
+            } else {
+                if (game.turn() === 'w') {
+                    document.getElementById('status').innerText = game.in_check() ? '⚠️ SKAK! Giliran Anda' : 'Giliran Anda (Sentuh bidak)';
+                } else {
+                    document.getElementById('status').innerText = '🤖 Giliran AI...';
+                }
+            }
+        }
 
-        ctx.restore();
-      });
-    }
+        board = Chessboard('board', {
+            position: 'start',
+            draggable: false, // Mengharuskan mode sentuh/klik
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+        });
 
-    // Interval Kecepatan Gerak (80ms)
-    setInterval(() => {
-      update();
-      draw();
-    }, 80);
-  </script>
+        initStockfish();
+
+        // Listener untuk Sentuhan/Klik pada Petak Papan
+        $('#board').on('click', '.square-55d63', function () {
+            const square = $(this).attr('data-square');
+            handleSquareClick(square);
+        });
+
+        document.getElementById('btn-restart').addEventListener('click', () => {
+            game.reset();
+            board.start();
+            removeHighlights();
+            selectedSquare = null;
+            updateStatus();
+        });
+
+        document.getElementById('btn-undo').addEventListener('click', () => {
+            game.undo(); // Undo AI
+            game.undo(); // Undo Pemain
+            board.position(game.fen());
+            removeHighlights();
+            selectedSquare = null;
+            updateStatus();
+        });
+    </script>
 </body>
 </html>

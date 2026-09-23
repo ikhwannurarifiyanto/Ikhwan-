@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Ikhwan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Handlee&family=Sriracha&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script><link rel="stylesheet" href="https://htmlku.my.id/emangnya/style.css">
+</head>
+<body>
+  
+  <!-- Audio -->
+  <audio src="https://feeldreams.github.io/audio/pahitasam.mp3" id="linkmp3"></audio>
+  
+  <!-- Background / Wallpaper -->
+  <div class="background-overlay" data-src="https://raw.githubusercontent.com/ikhwannurarifiyanto/Ikhwann/main/IMG-20260703-WA0001.jpg"></div>
+
+  <!-- Halaman 1: Envelope -->
+  <div id="hal1">
+    <div class="envlope-wrapper">
+      <div id="envelope" class="close">
+        <div class="front flap"></div>
+        <div class="front pocket"></div>
+        <div class="letter">
+          <div class="letter-corner corner-tl"></div>
+          <div class="letter-corner corner-br"></div>
+          <div class="message">
+            <p>Alooo Dila! ✨</p>
+          </div>
+        </div>
+        <div class="hearts">
+          <div class="heart a1"></div>
+          <div class="heart a2"></div>
+          <div class="heart a3"></div>
+        </div>
+        <div class="sparkles">
+          <div class="sparkle s1"></div>
+          <div class="sparkle s2"></div>
+          <div class="sparkle s3"></div>
+        </div>
+      </div>
+    </div>
+    <div class="reset">
+      <button style="border-radius: 20px;padding:4px 12px;margin-top:-25px" onclick="bukaEnvelope()">Buka</button>
+    </div>
+  </div>
+
+  <!-- Halaman 2: Tebak PIN -->
+  <div id="hal2" class="kotak sembunyi">
+    <div class="decor decor-tl"></div>
+    <div class="decor decor-br"></div>
+    <h2 style="font-size:19.5px">Coba Tebak PIN-nya 🔐</h2>
+    <p style="font-size:14.5px">Masukkan 4 digit PIN yang benar!</p>
+    <div id="kotakPesan"></div>
+    <div id="pinDisplay" class="pinDisplay">
+      <span class="pinDot"></span>
+      <span class="pinDot"></span>
+      <span class="pinDot"></span>
+      <span class="pinDot"></span>
+    </div>
+    <p id="pinPesan"></p>
+    <div id="keypadPin" class="keypadPin"></div>
+  </div>
+
+  <div id="hal3" class="kotak sembunyi"></div>
+
+  <!-- Halaman 4: Pesan Utama -->
+  <div id="hal4" class="kotak sembunyi">
+    <div class="decor decor-tl"></div>
+    <div class="decor decor-br"></div>
+    <!-- Stiker Gif -->
+    <div id="stiker4" class="stiker">
+        <img id="stiker4a" src="https://htmlku.com/0/panda/muah.gif" />
+        <img id="stiker4b" class="sembunyi" src="https://htmlku.com/0/panda/ledekin.gif" />
+        <img id="stiker4c" class="sembunyi" src="https://htmlku.com/0/panda/panah.gif" />
+    </div>
+    <div id="containerPesan">
+	    <p id="teksPpertama"></p>
+	    <p id="teksPkedua"></p>
+	    <p id="teksPketiga"></p>
+    </div>
+    <button style="display:none" onclick="shareWa()">Kirim ke Dia!</button>
+  </div>
+  <div class="tombol">
+    <button style="padding:4px 12px;" onclick="balasWa()">💌 Balas</button>
+  </div>
+  
+  <!-- Circle Animation -->
+  <div>
+        <div>
+            <div class="circ">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    let pinBenar = "3542";
+    var cluePin = "Hint: 3542";
+    var teksPinBenar = "Yeayy! PIN-nya benerr! 🥳";
+    
+    const txtPertama = `Sekarang, Dila Tau Gaa? 🫢`;   
+    const txtKedua = `<b>Ada Tiga Cara Untuk Menjadi <span style='color:pink'>Calon</span> Aku.. 😋</b><br><br><b style="font-size:22px;">⏳ <b id='waktuMundur'>5</b></b>`;
+    const txtKetiga = `<b style="font-size:18px">Loh.. Kok Ditungguin?! 😝</b><br><br><b>Emangnya Dila Mau Jadi<br><span style='color:pink'>Calon</span> Aku? 🤣</b><br><br>Heheee 🫣 ᯓᡣ𐭩`;
+
+    const nomorWApengirim = ""; // Ganti dengan nomor WhatsApp pengirim (Anda)
+    const textyangAkanDikirim = "Mauu gak yaaaa!";
+  </script>
+  <script src="https://htmlku.my.id/emangnya/script.js"></script>
+</body>
+              </html>
